@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أسهل - تسجيل الدخول</title>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #f4f6f8; margin: 0; }
+        .login-box { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; width: 85%; max-width: 320px; min-height: 250px; display: flex; flex-direction: column; justify-content: center; }
+        input { width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #ddd; border-radius: 10px; text-align: center; font-size: 18px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; border: none; background: #2e7d32; color: white; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 5px; }
+        p { font-size: 14px; color: #666; margin-bottom: 10px; }
+        #loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f6f8; display: flex; align-items: center; justify-content: center; z-index: 9999; }
+    </style>
+</head>
+<body>
+
+    <div id="loading-screen">جاري التحميل...</div>
+
+    <div class="login-box" id="main-content" style="visibility: hidden;">
+        <h2 id="title">تسجيل الدخول</h2>
+        <p id="description">أدخل كلمة السر للمتابعة</p>
+        <input type="password" id="pin-input" placeholder="كلمة السر" inputmode="numeric">
+        <button id="action-btn" onclick="checkPin()">دخول</button>
+    </div>
+
+    <script>
+        window.onload = function() {
+            // تأخير بسيط لمدة نصف ثانية لضمان استقرار المتصفح
+            setTimeout(function() {
+                const savedPin = localStorage.getItem('userPin');
+                const isLoggedIn = localStorage.getItem('isLoggedIn');
+                
+                const title = document.getElementById('title');
+                const desc = document.getElementById('description');
+                const input = document.getElementById('pin-input');
+                const btn = document.getElementById('action-btn');
+                const loading = document.getElementById('loading-screen');
+                const content = document.getElementById('main-content');
+
+                if (!savedPin) {
+                    // أول مرة: إنشاء حساب
+                    title.innerText = "أهلاً بك في أسهل";
+                    desc.innerText = "يرجى تعيين كلمة سر جديدة";
+                    input.placeholder = "اختر 4 أرقام";
+                    btn.innerText = "إنشاء الحساب";
+                    btn.onclick = createAccount;
+                    
+                    loading.style.display = 'none';
+                    content.style.visibility = 'visible';
+                } 
+                else if (isLoggedIn === 'true') {
+                    // مسجل دخول مسبقاً: انتقال مباشر
+                    window.location.replace("home.html");
+                } 
+                else {
+                    // لديه حساب ويحتاج تسجيل دخول
+                    loading.style.display = 'none';
+                    content.style.visibility = 'visible';
+                }
+            }, 500); 
+        };
+
+        function createAccount() {
+            const pin = document.getElementById('pin-input').value;
+            if (pin.length >= 4) {
+                localStorage.setItem('userPin', pin);
+                localStorage.setItem('isLoggedIn', 'true');
+                alert("تم إنشاء الحساب بنجاح!");
+                window.location.replace("home.html");
+            } else {
+                alert("يرجى إدخال 4 أرقام على الأقل");
+            }
+        }
+
+        function checkPin() {
+            const enteredPin = document.getElementById('pin-input').value;
+            const savedPin = localStorage.getItem('userPin');
+            if (enteredPin === savedPin) {
+                localStorage.setItem('isLoggedIn', 'true');
+                window.location.replace("home.html");
+            } else {
+                alert("كلمة السر خاطئة!");
+            }
+        }
+    </script>
+</body>
+</html>
